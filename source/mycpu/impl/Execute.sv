@@ -33,28 +33,10 @@ module Execute (
                 alushamt=r_E.shamt;
                 evEok=1'b1;
             end
-            OP_ADDIU:begin
+            OP_ADDIU,OP_ANDI,OP_ORI, OP_XORI:begin
                 alu_in1=r_E.valC;
                 alu_in2=r_E.valB;
-                alufunct=FN_ADDU;
-                evEok=1'b1;
-            end
-            OP_ANDI:begin
-                alu_in1=r_E.valC;
-                alu_in2=r_E.valB;
-                alufunct=FN_AND;
-                evEok=1'b1;
-            end
-            OP_ORI:begin
-                alu_in1=r_E.valC;
-                alu_in2=r_E.valB;
-                alufunct=FN_OR;
-                evEok=1'b1;
-            end
-            OP_XORI:begin
-                alu_in1=r_E.valC;
-                alu_in2=r_E.valB;
-                alufunct=FN_XOR;
+                alufunct=r_E.funct;
                 evEok=1'b1;
             end
             OP_LW,OP_SW:begin
@@ -63,16 +45,10 @@ module Execute (
                 alufunct=FN_ADDU;
                 evEok=1'b0;
             end
-            OP_SLTIU:begin
+            OP_SLTIU,OP_SLTI:begin
                 alu_in1=r_E.valB;
                 alu_in2=r_E.valC;
-                alufunct=FN_SLTU;
-                evEok=1'b1;
-            end
-            OP_SLTI:begin
-                alu_in1=r_E.valB;
-                alu_in2=r_E.valC;
-                alufunct=FN_SLT;
+                alufunct=r_E.funct;
                 evEok=1'b1;
             end
             OP_JAL:begin

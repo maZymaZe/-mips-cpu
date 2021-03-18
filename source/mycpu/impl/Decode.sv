@@ -22,6 +22,10 @@ module Decode (
     logic dsaok;
     logic dsbok;
     always_comb begin
+        r_d.dstM=regid_t'('0);
+        r_d.dstE=regid_t'('0);
+        dsrcA=regid_t'('0);
+        dsrcB=regid_t'('0);
         dsbok='0;
         dsaok='0;
         unique case (r_D.opcode)
@@ -66,7 +70,6 @@ module Decode (
         endcase
     
         r_d.opcode=r_D.opcode;
-        r_d.funct=r_D.funct;
         r_d.stat=r_D.stat;
         r_d.shamt= r_D.shamt;
         r_d.pc= r_D.pc;
@@ -74,7 +77,9 @@ module Decode (
     end
 
     always_comb begin
-
+        r_d.valB='0;
+        r_d.valA='0;
+        r_d.valC='0;
         if(dsbok==1'b1)begin
             priority if(dsrcB==edstE&&evEok==1'b1)begin
                 r_d.valB=evalE;                
@@ -101,8 +106,20 @@ module Decode (
             OP_SLTIU: begin
                 r_d.funct=FN_SLTU;
             end
+            OP_XORI: begin
+                r_d.funct=FN_XOR;
+            end
+            OP_ORI: begin
+                r_d.funct=FN_OR;
+            end
+            OP_ANDI: begin
+                r_d.funct=FN_AND;
+            end
+            OP_ADDIU: begin
+                r_d.funct=FN_ADDU;
+            end
             default: begin
-            
+                r_d.funct=r_D.funct;
             end
         endcase
 

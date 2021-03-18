@@ -26,9 +26,9 @@ module MyCore (
 
     plr_w r_W;
 
-    addr_t PG_PC=32'hbfc0_0000;
+    addr_t PG_PC;
     //addr_t PD_PC=32'hbfc0_0000;
-    addr_t PR_PC=32'hbfc0_0000;
+    addr_t PR_PC;
     addr_t PG_PC_t;
 
     logic evEok;
@@ -47,8 +47,10 @@ module MyCore (
     regid_t dsrcB;
 
     always_ff @(posedge clk)
-    if (resetn) begin
+    if (~resetn) begin
         // AHA!
+        PG_PC<=32'hbfc0_0000;
+        PR_PC<=32'hbfc0_0000;
     end else begin
         // reset
         // NOTE: if resetn is X, it will be evaluated to false.
@@ -92,6 +94,10 @@ module MyCore (
             r_D_t=r_D;
             PG_PC_t=PG_PC;
         end 
+
+        if(PG_PC==PR_PC)begin
+            r_D_t='0;
+        end
         //TODO:FORWARD
         // TODO: control logic
     end
