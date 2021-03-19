@@ -80,7 +80,7 @@ module Decode (
         r_d.valB='0;
         r_d.valA='0;
         r_d.valC='0;
-        if(dsbok==1'b1)begin
+        if(dsbok==1'b1&&dsrcB!=R0)begin
             priority if(dsrcB==edstE&&evEok==1'b1)begin
                 r_d.valB=evalE;                
             end else if(dsrcB==MdstE&&MvEok==1'b1)begin
@@ -125,7 +125,7 @@ module Decode (
 
         if(r_D.opcode==OP_JAL)begin
             r_d.valA=r_D.valP;
-        end else if(dsaok==1'b1)begin
+        end else if(dsaok==1'b1&&dsrcA!=R0)begin
             priority if(dsrcA==edstE&&evEok==1'b1)begin
                 r_d.valA=evalE;                
             end else if(dsrcA==MdstE&&MvEok==1'b1)begin
@@ -143,17 +143,17 @@ module Decode (
         r_d.valC=r_D.valC;
         unique case (r_D.opcode)
             OP_BEQ:begin
-                if(rvalA==rvalB)begin
+                if(r_d.valA==r_d.valB)begin
                     r_d.valC=r_D.valC+r_D.valP+4;
                 end else begin
-                    r_d='0;
+                    r_d.valC='0;
                 end
             end
             OP_BNE:begin
-                if(rvalA!=rvalB)begin
+                if(r_d.valA!=r_d.valB)begin
                     r_d.valC=r_D.valC+r_D.valP+4;
                 end else begin
-                    r_d='0;
+                    r_d.valC='0;
                 end
             end
             default: begin

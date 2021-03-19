@@ -57,33 +57,43 @@ module MyCore (
         
 
          // TODO:REGUPDATE
-        if(SolveLW==1)begin
+      /*  if(SolveLW==1)begin
             //PG_PC<=PG_PC;
-            r_E<='0;
+          
         end else begin
 
-            if(r_E.opcode==OP_BNE||r_E.opcode==OP_BEQ)begin
-                PG_PC<=r_E.valC;          
-            end else if(r_E.opcode==OP_J||r_E.opcode==OP_JAL)begin
-                PG_PC<=r_E.valC;
-            end else if(r_E.opcode==OP_RTYPE&&r_E.funct==FN_JR)begin
-                PG_PC<=r_E.valC;
+            
+        end*/
+        r_M<=r_e;
+        r_W<=r_m;
+        r_D_S<=r_D;
+        if((r_E.opcode==OP_LW&&((r_E.dstM==dsrcA&&Decode.dsaok)||(r_E.dstM==dsrcB&&Decode.dsbok)))||
+        (r_M.opcode==OP_LW&&((r_M.dstM==dsrcA&&Decode.dsaok)||(r_M.dstM==dsrcB&&Decode.dsbok))))begin
+            SolveLW<=1; 
+            PR_PC<=PR_PC;
+            //r_D_S<=r_D_S;  
+            //if(r_E.opcode==OP_LW&&(r_E.dstM==dsrcA||r_E.dstM==dsrcB))begin
+            //    r_E<='0;
+            //end else begin
+                r_E<='0;
+            //end
+            PG_PC<=PR_PC;     
+        end else begin
+            SolveLW<=0;
+            if((r_d.opcode==OP_BNE||r_d.opcode==OP_BEQ)&&r_d.valC!=0)begin
+                PG_PC<=r_d.valC;          
+            end else if(r_d.opcode==OP_J||r_d.opcode==OP_JAL)begin
+                PG_PC<=r_d.valC;
+            end else if(r_d.opcode==OP_RTYPE&&r_d.funct==FN_JR)begin
+                PG_PC<=r_d.valA;
             end else begin
                 PG_PC<=PG_PC+4;
             end
+         
             r_E<=r_d;
-        end
-        r_M<=r_e;
-        r_W<=r_m;
-
-        if(r_E.opcode==OP_LW&&(r_E.dstM==dsrcA||r_E.dstM==dsrcB))begin
-            SolveLW<=1; 
-            //r_D_S<=r_D_S;     
-            PR_PC<=PR_PC;      
-        end else begin
-            SolveLW<=0;
-            r_D_S<=r_D;
+            
             PR_PC<=PG_PC;
+ 
         end
     end
     always_comb begin 

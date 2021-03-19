@@ -9,7 +9,6 @@ module Execute (
     shamt_t  alushamt;
     funct_t  alufunct;
     always_comb begin
-        r_e='0;
         evEok='0;
         r_e.dstE=r_E.dstE;
         r_e.dstM=r_E.dstM;
@@ -19,6 +18,11 @@ module Execute (
         r_e.funct=r_E.funct;
         r_e.pc= r_E.pc;
 
+        alu_in1='0;
+        alu_in2='0;
+        alufunct=funct_t'('0);
+        alushamt='0;
+        evEok='0;
         unique case (r_E.opcode)
             OP_LUI:begin//pass without changing
                 alu_in1=r_E.valC;
@@ -31,7 +35,11 @@ module Execute (
                 alu_in2=r_E.valB;
                 alufunct=r_E.funct;
                 alushamt=r_E.shamt;
-                evEok=1'b1;
+                if(r_E.funct!=FN_JR)begin
+                    evEok=1'b1;
+                end else begin
+                    evEok=1'b0;
+                end
             end
             OP_ADDIU,OP_ANDI,OP_ORI, OP_XORI:begin
                 alu_in1=r_E.valC;

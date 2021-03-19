@@ -4,8 +4,7 @@ module Alu(
     input word_t alu_in2,
     input shamt_t alushamt,
     input funct_t  alufunct,
-    output word_t aluout,
-    output logic evEok
+    output word_t aluout
 );
     always_comb begin
         unique case (alufunct)
@@ -44,7 +43,6 @@ module Alu(
             end
             FN_JR:begin
                 aluout = alu_in1;
-                evEok=1'b0;
             end
             default:begin
                 aluout = 0;

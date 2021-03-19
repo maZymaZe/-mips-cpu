@@ -24,10 +24,15 @@ module PreDecode (
                 r_D.rB=regid_t'(iresp.data[20:16]);
                 r_D.valC={iresp.data[15:0],16'b0};
             end
-            OP_ADDIU,OP_LW,OP_SLTI,OP_SLTIU,OP_SW,OP_ANDI,OP_ORI,OP_XORI:begin
+            OP_ADDIU,OP_LW,OP_SLTI,OP_SLTIU,OP_SW:begin
                 r_D.rA=regid_t'(iresp.data[25:21]);
                 r_D.rB=regid_t'(iresp.data[20:16]);
                 r_D.valC={{16{iresp.data[15]}},iresp.data[15:0]};
+            end
+            OP_ANDI,OP_ORI,OP_XORI:begin
+                r_D.rA=regid_t'(iresp.data[25:21]);
+                r_D.rB=regid_t'(iresp.data[20:16]);
+                r_D.valC={{16{0}},iresp.data[15:0]};
             end
             OP_BEQ, OP_BNE:begin
                 r_D.rA=regid_t'(iresp.data[25:21]);
