@@ -1,6 +1,5 @@
 `include "common.svh"
 `include "mycpu/defs.svh"
-`include "mycpu/impl.svh"
 
 module MyCore (
     input logic clk, resetn,
@@ -27,7 +26,6 @@ module MyCore (
     plr_w r_W;
 
     addr_t PG_PC;
-    //addr_t PD_PC=32'hbfc0_0000;
     addr_t PR_PC;
     addr_t PG_PC_t;
 
@@ -46,6 +44,9 @@ module MyCore (
     regid_t dsrcA;
     regid_t dsrcB;
 
+    logic dsaok;
+    logic dsbok;
+
     always_ff @(posedge clk)
     if (~resetn) begin
         // AHA!
@@ -54,29 +55,14 @@ module MyCore (
     end else begin
         // reset
         // NOTE: if resetn is X, it will be evaluated to false.
-        
-
-         // TODO:REGUPDATE
-      /*  if(SolveLW==1)begin
-            //PG_PC<=PG_PC;
-          
-        end else begin
-
-            
-        end*/
         r_M<=r_e;
         r_W<=r_m;
         r_D_S<=r_D;
-        if((r_E.opcode==OP_LW&&((r_E.dstM==dsrcA&&Decode.dsaok)||(r_E.dstM==dsrcB&&Decode.dsbok)))||
-        (r_M.opcode==OP_LW&&((r_M.dstM==dsrcA&&Decode.dsaok)||(r_M.dstM==dsrcB&&Decode.dsbok))))begin
+        if((r_E.opcode==OP_LW&&((r_E.dstM==dsrcA&&dsaok)||(r_E.dstM==dsrcB&&dsbok)))||
+        (r_M.opcode==OP_LW&&((r_M.dstM==dsrcA&&dsaok)||(r_M.dstM==dsrcB&&dsbok))))begin
             SolveLW<=1; 
             PR_PC<=PR_PC;
-            //r_D_S<=r_D_S;  
-            //if(r_E.opcode==OP_LW&&(r_E.dstM==dsrcA||r_E.dstM==dsrcB))begin
-            //    r_E<='0;
-            //end else begin
-                r_E<='0;
-            //end
+            r_E<='0;
             PG_PC<=PR_PC;     
         end else begin
             SolveLW<=0;
@@ -88,12 +74,9 @@ module MyCore (
                 PG_PC<=r_d.valA;
             end else begin
                 PG_PC<=PG_PC+4;
-            end
-         
+            end  
             r_E<=r_d;
-            
-            PR_PC<=PG_PC;
- 
+            PR_PC<=PG_PC; 
         end
     end
     always_comb begin 
@@ -108,8 +91,6 @@ module MyCore (
         if(PG_PC==PR_PC)begin
             r_D_t='0;
         end
-        //TODO:FORWARD
-        // TODO: control logic
     end
 
     regfile rgfl(.clk(clk),.ra1(dsrcA),.ra2(dsrcB),.wa3(wr_reg),.write_enable(write_enable),

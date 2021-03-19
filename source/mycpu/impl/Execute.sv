@@ -13,7 +13,6 @@ module Execute (
         r_e.dstE=r_E.dstE;
         r_e.dstM=r_E.dstM;
         r_e.valA=r_E.valA;
-        r_e.stat=r_E.stat;
         r_e.opcode=r_E.opcode;
         r_e.funct=r_E.funct;
         r_e.pc= r_E.pc;

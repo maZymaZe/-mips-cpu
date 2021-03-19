@@ -32,7 +32,7 @@ module PreDecode (
             OP_ANDI,OP_ORI,OP_XORI:begin
                 r_D.rA=regid_t'(iresp.data[25:21]);
                 r_D.rB=regid_t'(iresp.data[20:16]);
-                r_D.valC={{16{0}},iresp.data[15:0]};
+                r_D.valC={{16{1'b0}},iresp.data[15:0]};
             end
             OP_BEQ, OP_BNE:begin
                 r_D.rA=regid_t'(iresp.data[25:21]);

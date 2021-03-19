@@ -17,10 +17,11 @@ module Decode (
     input regid_t WdstM,
     input regid_t WdstE,
     output regid_t dsrcA,
-    output regid_t dsrcB
+    output regid_t dsrcB,
+    output logic dsaok,
+    output logic dsbok
 );
-    logic dsaok;
-    logic dsbok;
+
     always_comb begin
         r_d.dstM=regid_t'('0);
         r_d.dstE=regid_t'('0);
@@ -70,7 +71,6 @@ module Decode (
         endcase
     
         r_d.opcode=r_D.opcode;
-        r_d.stat=r_D.stat;
         r_d.shamt= r_D.shamt;
         r_d.pc= r_D.pc;
         

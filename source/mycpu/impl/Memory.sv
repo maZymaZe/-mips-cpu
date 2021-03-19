@@ -37,7 +37,6 @@ module Memory (
             default: begin
             end
         endcase
-        r_m.stat=r_M.stat;
         r_m.opcode=r_M.opcode;
         r_m.valE = r_M.valE;        
         r_m.dstE = r_M.dstE;
