@@ -81,8 +81,8 @@ module mycpu_top (
     /**
      * TODO (Lab1) connect debug ports :)
      */
-    assign debug_wb_pc       = MyCore.r_W.pc;
-    assign debug_wb_rf_wen   = {4{MyCore.write_enable}};
-    assign debug_wb_rf_wnum  = MyCore.wr_reg;
-    assign debug_wb_rf_wdata = MyCore.wr_word;
+    assign debug_wb_pc       = top.core.r_W.pc;
+    assign debug_wb_rf_wen   = {4{top.core.write_enable}};
+    assign debug_wb_rf_wnum  = top.core.wr_reg;
+    assign debug_wb_rf_wdata = top.core.wr_word;
 endmodule

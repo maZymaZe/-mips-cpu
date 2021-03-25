@@ -34,6 +34,23 @@ module VTop (
     /**
      * TODO (optional) add address translation for oreq.addr :)
      */
+     /*
+    typedef logic [31:0] paddr_t;
+    typedef logic [31:0] vaddr_t;
 
+    paddr_t paddr; // physical address
+    vaddr_t vaddr; // virtual address
+
+    assign inst_sram_addr[27:0] =oreq.addr[27:0];
+    always_comb begin
+        unique case (oreq.addr[31:28])
+            4'h8: inst_sram_addr[31:28] = 4'b0; // kseg0
+            4'h9: inst_sram_addr[31:28] = 4'b1; // kseg0
+            4'ha: inst_sram_addr[31:28] = 4'b0; // kseg1
+            4'hb: inst_sram_addr[31:28] = 4'b1; // kseg1
+            default: inst_sram_addr[31:28] = oreq.addr[31:28]; // useg, ksseg, kseg3
+        endcase
+    end
+    */
     logic _unused_ok = &{ext_int};
 endmodule

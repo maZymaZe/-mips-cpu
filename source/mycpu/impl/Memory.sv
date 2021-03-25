@@ -10,6 +10,11 @@ module Memory (
         r_m='0;
         MvEok='0;
         dreq.valid=1'b0;
+        m_addr='0;
+        dreq.addr=m_addr;
+        dreq.size=MSIZE4;
+        dreq.strobe=4'b0000;
+        dreq.data='0;
         unique case (r_M.opcode)
             OP_LW:begin
                 m_addr=r_M.valE;
