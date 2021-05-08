@@ -1,0 +1,9 @@
+`ifndef __MYCPU_DEFS_SVH__
+`define __MYCPU_DEFS_SVH__
+
+`include "common.svh"
+
+`include "instr.svh"
+`include "pipelineRegister.svh"
+
+`endif
