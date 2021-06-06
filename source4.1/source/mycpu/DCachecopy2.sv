@@ -2,7 +2,7 @@
 `include "mycpu/defs.svh"
 module DCache  #(
     parameter int OFFSET_BITS = 4,
-    parameter int INDEX_BITS = 6,
+    parameter int INDEX_BITS = 2,
     localparam int TAG_BITS = 30 - OFFSET_BITS - INDEX_BITS
 ) (
     input logic clk, resetn,
@@ -15,8 +15,8 @@ module DCache  #(
     /**
      * TODO (Lab3) your code here :)
      */
-    typedef i20 tag_t;
-    typedef i6 index_t;
+    typedef i24 tag_t;
+    typedef i2 index_t;
     typedef i4 offset_t;
     typedef i2 position_t;  // cache set 内部的下标
 
@@ -55,14 +55,14 @@ module DCache  #(
     offset_t raddr_offset;
     assign {rtag, rindex, raddr_offset} = req.addr[31:2];
 
-    logic  [255:0]ram_en;
+    logic  [15:0]ram_en;
     strobe_t ram_strobe;
     word_t   ram_wdata;
-    word_t [255:0]ram_rdata;   
+    word_t [15:0]ram_rdata;   
     // 存储单元（寄存器）
     genvar gvr_i;
     generate
-        for(gvr_i = 0; gvr_i <256;gvr_i++)begin:ram_gen
+        for(gvr_i = 0; gvr_i <16;gvr_i++)begin:ram_gen
             LUTRAM ram_inst(
                 .clk(clk), .en(ram_en[gvr_i]),
                 .addr(offset),
@@ -72,7 +72,7 @@ module DCache  #(
             );
         end
     endgenerate
-    meta_set_t [63:0]meta;
+    meta_set_t [3:0]meta;
     // 解析地址
 
     // 访问元数据
@@ -81,7 +81,7 @@ module DCache  #(
     meta_set_t rfoo;
     assign rfoo = meta[rindex];
 
-    i2 [63:0]nxt_wr;
+    i2 [3:0]nxt_wr;
     i2 nnxt;
     // 搜索 cache line
     position_t position;

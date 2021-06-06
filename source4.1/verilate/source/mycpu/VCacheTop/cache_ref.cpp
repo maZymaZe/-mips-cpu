@@ -23,22 +23,22 @@ void CacheRefModel::reset() {
     mem.reset();
 }
 int CacheRefModel::inCache(addr_t addr) {
-    addr_t tag = addr >> 8;
-    for (int i = 0; i < 16; i++) {
+    addr_t tag = addr >> 12;
+    for (int i = 0; i < 256; i++) {
         if (meta[i].tag == tag && meta[i].valid == true &&
-            (i >> 2) == ((addr & 0xff) >> 6))
+            (i >> 2) == ((addr & 0xfff) >> 6))
             return i + 1;
     }
     return 0;
 }
 int CacheRefModel::fetch(addr_t addr) {
-    word_t index = ((addr & 0xff) >> 6);
+    word_t index = ((addr & 0xfff) >> 6);
     nxt_wr[index] = (nxt_wr[index] + 1) &3;
     int lid = (nxt_wr[index]) | (index << 2);
      //printf("\n!%x %d!\n",addr,lid);
 
     if (meta[lid].valid && meta[lid].dirty) {
-        addr_t start = (meta[lid].tag << 8) | (index <<6);
+        addr_t start = (meta[lid].tag << 12) | (index <<6);
         for (int i = 0; i < 16; i++) {
             mem.store(start + 4 * i, cache[lid][i], 0xffffffff);
             //printf("\n!%x %x!\n", start + 4 * i,cache[lid][i]);
@@ -49,7 +49,7 @@ int CacheRefModel::fetch(addr_t addr) {
     for (int i = 0; i < 16; i++) {
         cache[lid][i] = mem.load(start + 4 * i);
     }
-    meta[lid].tag = addr >> 8;
+    meta[lid].tag = addr >> 12;
     meta[lid].valid = 1;
     meta[lid].dirty = 0;
     return lid;
@@ -109,7 +109,7 @@ void CacheRefModel::check_internal() {
     
     log_debug("ref: check_internal()\n");
     //check_memory();
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 256; i++) {
         for (int j = 0; j < 16; j++) {
             if (meta[i].valid)
                 asserts(cache[i][j] == scope->mem[i * 16 + j],

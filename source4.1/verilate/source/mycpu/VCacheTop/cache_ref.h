@@ -19,13 +19,13 @@ public:
 private:
 
 
-    word_t cache[16][16];
-    int nxt_wr[4] = {0};
+    word_t cache[256][16];
+    int nxt_wr[256] = {0};
     struct META{
         addr_t tag;
         bool valid;
         bool dirty;
-    }meta[16];
+    }meta[256];
 
 
     MyCache *top;

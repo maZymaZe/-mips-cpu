@@ -38,10 +38,10 @@ module VCacheTop (
     typedef word_t [15:0] cache_line_t;
     
      /* verilator tracing_on */
-     cache_line_t [15:0] mem /* verilator public_flat_rd */;
+     cache_line_t [255:0] mem /* verilator public_flat_rd */;
      /* verilator tracing_off */
     
-     for (genvar i = 0; i < 16; i++) begin
+     for (genvar i = 0; i < 256; i++) begin
          assign mem[i] = top.ram_gen[i].ram_inst.behavioral.mem;
      end
 endmodule
