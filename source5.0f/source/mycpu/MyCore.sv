@@ -69,10 +69,16 @@ module MyCore (
     logic dsaok;
     logic dsbok;
 
+    addr_t StorebufferAddr;
+    word_t StorebufferData;
+    logic StorebufferEn;
+    logic InStore;
+    
     logic i_data_ok,d_data_ok;
     //TODO: check
     assign i_data_ok=iresp.data_ok;
-    assign d_data_ok=(~dreq.valid)|dresp.data_ok;
+    assign d_data_ok=(~dreq.valid)|(dresp.data_ok&&~InStore)|InStore;
+
 
     logic SolveLW;
     assign SolveLW =((r_E.opcode==OP_LW||r_E.opcode==OP_LB||r_E.opcode==OP_LH||r_E.opcode==OP_LBU||r_E.opcode==OP_LHU)&&
@@ -87,7 +93,7 @@ module MyCore (
     r_d.opcode==OP_BTYPE||r_d.opcode==OP_BLEZ||r_d.opcode==OP_BGTZ)
     &&r_d.valC!=0)||(r_d.opcode==OP_J||r_d.opcode==OP_JAL);
     assign branchstall2 = (r_d.opcode==OP_RTYPE&&(r_d.funct==FN_JR||r_d.funct==FN_JALR));
-    logic fd_stall,e_stall,m_stall,e_bubble,w_bubble;
+    logic fd_stall,e_stall,m_stall,e_bubble,w_bubble,m_bubble;
 
     logic branchstall1sp,branchstall2sp;
     logic isjmpsp;
@@ -96,24 +102,27 @@ module MyCore (
     )||(r_d.opcode==OP_J||r_d.opcode==OP_JAL);
     assign branchstall2sp = (r_d.opcode==OP_RTYPE&&(r_d.funct==FN_JR||r_d.funct==FN_JALR));
 
+    i32 hi,lo;
+    i1 hi_write,lo_write;
+    i32 hi_data,lo_data;
+    logic mul_div_stall;
     logic hilo_delay;
     assign hilo_delay =(r_E.opcode==OP_RTYPE&&(r_E.funct==FN_DIV||r_E.funct==FN_DIVU||r_E.funct==FN_MULT||r_E.funct==FN_MULTU||r_E.funct==FN_MTLO||r_E.funct==FN_MTHI)
-    &&(r_D.opcode==OP_RTYPE&&(r_D.funct==FN_MFLO||r_D.funct==FN_MFHI)));
+    &&(r_D.opcode==OP_RTYPE&&(r_D.funct==FN_MFLO||r_D.funct==FN_MTHI)));
 
-    assign fd_stall = ~i_data_ok | ~d_data_ok | SolveLW | hilo_delay;
+    assign fd_stall = ~i_data_ok | ~d_data_ok | SolveLW | hilo_delay|mul_div_stall;
    
-    assign e_stall = ~d_data_ok;
+    assign e_stall = (~d_data_ok)|mul_div_stall;
     assign m_stall = ~d_data_ok;
 
-    assign e_bubble = SolveLW | ~i_data_ok|hilo_delay;
+    assign e_bubble = (SolveLW | ~i_data_ok|hilo_delay)&(~mul_div_stall);
     assign w_bubble = ~d_data_ok;
+    assign m_bubble = mul_div_stall;
 
     addr_t nxt;
     logic isjmp;
 
-    i32 hi,lo;
-    i1 hi_write,lo_write;
-    i32 hi_data,lo_data;
+
 
     logic ERRPROCESS;
     logic ERETPROCESS;
@@ -130,6 +139,10 @@ module MyCore (
         nxt<='0;
         ERRPROCESS<='0;
         ERETPROCESS<='0;
+        StorebufferData<='0;
+        StorebufferEn<='0;
+        StorebufferAddr<='0;
+        InStore<='0;
     end else begin
         // reset
         // NOTE: if resetn is X, it will be evaluated to false.
@@ -173,13 +186,25 @@ module MyCore (
         end else if(~e_stall)begin
             r_E<=r_d;
         end
-        if(~m_stall)begin
+        if(m_bubble)begin
+            r_M<='0;
+        end if(~m_stall)begin
             r_M<=r_e;
         end
         if(w_bubble)begin
             r_W<='0;
         end else begin
             r_W<=r_m;
+        end
+
+        if(r_m.opcode==OP_SW&&(~InStore))begin
+            StorebufferEn<=1'b1;
+            StorebufferAddr<=r_M.valE;
+            StorebufferData<=r_M.valA;
+            InStore<=1'b1;
+        end
+        if(dresp.data_ok&&InStore)begin
+            InStore<='0;
         end
 
         if(ERRPROCESS||ERETPROCESS)begin

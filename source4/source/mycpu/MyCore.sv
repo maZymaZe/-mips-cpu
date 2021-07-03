@@ -98,7 +98,7 @@ module MyCore (
 
     logic hilo_delay;
     assign hilo_delay =(r_E.opcode==OP_RTYPE&&(r_E.funct==FN_DIV||r_E.funct==FN_DIVU||r_E.funct==FN_MULT||r_E.funct==FN_MULTU||r_E.funct==FN_MTLO||r_E.funct==FN_MTHI)
-    &&(r_D.opcode==OP_RTYPE&&(r_D.funct==FN_MFLO||r_D.funct==FN_MTHI)));
+    &&(r_D.opcode==OP_RTYPE&&(r_D.funct==FN_MFLO||r_D.funct==FN_MFHI)));
 
     assign fd_stall = ~i_data_ok | ~d_data_ok | SolveLW | hilo_delay;
    
